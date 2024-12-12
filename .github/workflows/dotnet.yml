@@ -34,21 +34,26 @@ jobs:
 
       # Deploy to Windows Server
       - name: Deploy to Windows Server
-        uses: appleboy/scp-action@v0.1.4
+        uses: appleboy/ssh-action@v0.1.4
         with:
           host: 44.222.253.64 
           username: Administrator
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
-          source: ./publish/
-          target: C:/inetpub/wwwroot/publish
+          port: 22  # Default SSH port
+          script: |
+            # Remove existing files in the publish folder (to replace them)
+            Remove-Item -Path "C:/inetpub/wwwroot/publish" -Recurse -Force
+            # Copy the new files from the local publish directory
+            Copy-Item -Path "C:/publish/*" -Destination "C:/inetpub/wwwroot/publish/" -Recurse -Force
 
       # Restart IIS to apply the changes (using SSH)
       - name: Restart IIS Service
         uses: appleboy/ssh-action@v0.1.4
         with:
-          host: 44.222.253.64  # Your Windows Server IP
-          username: Administrator  # SSH Username
-          password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p  # Secure password stored in GitHub Secrets
-          port: 22  # Default SSH port
+          host: 44.222.253.64
+          username: Administrator
+          password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
+          port: 22
           script: |
-           iisreset
+            # Restart IIS service
+            iisreset
