@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "TPcM84dLXIwyhhXbG0AtwTD58S4Qlq/JDZO1ac5fjjk=",
+  "Source": "testproject",
+  "BasePath": "_content/testproject",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
