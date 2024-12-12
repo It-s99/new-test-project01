@@ -40,7 +40,7 @@ jobs:
           username: Administrator
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
           source: ./publish/*
-          target: C:/inetpub/wwwroot/publish/
+          target: C:/inetpub/wwwroot/
 
       # Clean existing files and apply new files
       - name: Clean and Apply Changes
@@ -49,10 +49,16 @@ jobs:
           host: 44.222.253.64
           username: Administrator
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
-          port: 22
+          port: 5985
           script: |
-            powershell.exe -Command "Remove-Item -Path 'C:/inetpub/wwwroot/*' -Recurse -Force"
-            powershell.exe -Command "Move-Item -Path 'C:/inetpub/wwwroot/publish/*' -Destination 'C:/inetpub/wwwroot/' -Recurse -Force"
+            # Remove all files and subfolders in 'C:/inetpub/wwwroot'
+            powershell.exe -Command "Remove-Item -Path 'C:/inetpub/wwwroot/*' -Recurse -Force -ErrorAction SilentlyContinue"
+            
+            # Move the 'publish' folder contents to the root of 'wwwroot'
+            powershell.exe -Command "Move-Item -Path 'C:/inetpub/wwwroot/publish/*' -Destination 'C:/inetpub/wwwroot/' -Recurse -Force -ErrorAction SilentlyContinue"
+            
+            # Optionally, remove the 'publish' folder after moving the files
+            powershell.exe -Command "Remove-Item -Path 'C:/inetpub/wwwroot/publish' -Recurse -Force -ErrorAction SilentlyContinue"
 
       # Restart IIS to apply the changes
       - name: Restart IIS Service
@@ -61,6 +67,7 @@ jobs:
           host: 44.222.253.64
           username: Administrator
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
-          port: 22
+          port: 5985
           script: |
+            # Restart IIS to apply changes
             iisreset
