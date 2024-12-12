@@ -51,14 +51,19 @@ jobs:
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
           port: 5985
           script: |
-            # Remove all files and subfolders in 'C:/inetpub/wwwroot'
-            powershell.exe -Command "Remove-Item -Path 'C:/inetpub/wwwroot/*' -Recurse -Force -ErrorAction SilentlyContinue"
-            
-            # Move the 'publish' folder contents to the root of 'wwwroot'
-            powershell.exe -Command "Move-Item -Path 'C:/inetpub/wwwroot/publish/*' -Destination 'C:/inetpub/wwwroot/' -Recurse -Force -ErrorAction SilentlyContinue"
-            
-            # Optionally, remove the 'publish' folder after moving the files
-            powershell.exe -Command "Remove-Item -Path 'C:/inetpub/wwwroot/publish' -Recurse -Force -ErrorAction SilentlyContinue"
+            powershell.exe -Command "
+              # Stop IIS worker processes to free any locked files
+              Stop-Process -Name w3wp -Force -ErrorAction SilentlyContinue;
+
+              # Remove all files and subdirectories inside the 'publish' folder
+              Get-ChildItem -Path 'C:/inetpub/wwwroot/publish' -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue;
+
+              # Remove the 'publish' directory itself if empty
+              Remove-Item -Path 'C:/inetpub/wwwroot/publish' -Recurse -Force -ErrorAction SilentlyContinue;
+
+              # Move the newly published files to the wwwroot folder
+              Move-Item -Path 'C:/inetpub/wwwroot/publish/*' -Destination 'C:/inetpub/wwwroot/' -Recurse -Force;
+            "
 
       # Restart IIS to apply the changes
       - name: Restart IIS Service
