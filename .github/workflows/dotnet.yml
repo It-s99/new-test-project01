@@ -74,5 +74,5 @@ jobs:
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
           port: 22
           script: |
-            # Restart IIS to apply changes
+            :: Restart IIS to apply changes
             iisreset
