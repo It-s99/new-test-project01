@@ -32,28 +32,37 @@ jobs:
       - name: Publish
         run: dotnet publish --configuration Release --output ./publish
 
-      # Deploy to Windows Server
-      - name: Deploy to Windows Server
+      # Transfer published files to Windows Server
+      - name: Transfer Published Files
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: 44.222.253.64 
+          username: Administrator
+          password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
+          source: ./publish/*
+          target: C:/inetpub/wwwroot/publish/
+
+      # Clean existing files and apply new files
+      - name: Clean and Apply Changes
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: 44.222.253.64 
           username: Administrator
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
-          port: 22  # Default SSH port
+          port: 22
           script: |
-            # Remove existing files in the publish folder (to replace them)
-            Remove-Item -Path "C:/inetpub/wwwroot/publish/*" -Recurse -Force
-            # Copy the new files from the local publish directory
-            Copy-Item -Path "C:/publish/*" -Destination "C:/inetpub/wwwroot/publish/" -Recurse -Force
+            # Remove old files
+            Remove-Item -Path "C:/inetpub/wwwroot/*" -Recurse -Force
+            # Move files from the publish folder to the wwwroot folder
+            Move-Item -Path "C:/inetpub/wwwroot/publish/*" -Destination "C:/inetpub/wwwroot/" -Recurse -Force
 
-      # Restart IIS to apply the changes (using SSH)
+      # Restart IIS to apply the changes
       - name: Restart IIS Service
         uses: appleboy/ssh-action@v0.1.4
         with:
-          host: 44.222.253.64
+         host: 44.222.253.64 
           username: Administrator
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
           port: 22
           script: |
-            # Restart IIS service
             iisreset
