@@ -41,3 +41,14 @@ jobs:
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
           source: ./publish/
           target: C:/inetpub/wwwroot/
+
+      # Restart IIS to apply the changes (using SSH)
+      - name: Restart IIS Service
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: 44.222.253.64  # Your Windows Server IP
+          username: Administrator  # SSH Username
+          password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p  # Secure password stored in GitHub Secrets
+          port: 22  # Default SSH port
+          script: |
+           iisreset
