@@ -40,7 +40,7 @@ jobs:
           username: Administrator
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
           source: ./publish/
-          target: C:/inetpub/wwwroot/
+          target: C:/inetpub/wwwroot/publish
 
       # Restart IIS to apply the changes (using SSH)
       - name: Restart IIS Service
