@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Qe/q83P0cyg=",
+  "dgSpecHash": "RvRK3pXS4cs=",
   "success": true,
-  "projectFilePath": "C:\\Users\\A11298\\Desktop\\New test project\\testproject\\testproject.csproj",
+  "projectFilePath": "C:\\Users\\A11298\\Desktop\\New test project\\new-test-project01\\testproject.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\A11298\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "C:\\Users\\A11298\\.nuget\\packages\\microsoft.openapi\\1.6.14\\microsoft.openapi.1.6.14.nupkg.sha512",
