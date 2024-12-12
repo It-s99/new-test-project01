@@ -51,10 +51,8 @@ jobs:
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
           port: 22
           script: |
-            # Remove old files
-            Remove-Item -Path "C:/inetpub/wwwroot/*" -Recurse -Force
-            # Move files from the publish folder to the wwwroot folder
-            Move-Item -Path "C:/inetpub/wwwroot/publish/*" -Destination "C:/inetpub/wwwroot/" -Recurse -Force
+            powershell.exe -Command "Remove-Item -Path 'C:/inetpub/wwwroot/*' -Recurse -Force"
+            powershell.exe -Command "Move-Item -Path 'C:/inetpub/wwwroot/publish/*' -Destination 'C:/inetpub/wwwroot/' -Recurse -Force"
 
       # Restart IIS to apply the changes
       - name: Restart IIS Service
