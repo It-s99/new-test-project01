@@ -32,21 +32,40 @@ jobs:
       - name: Publish
         run: dotnet publish --configuration Release --output ./publish
 
-      # Deploy to Windows Server
-      - name: Deploy to Windows Server
-        uses: appleboy/ssh-action@v0.1.4
+      # Transfer published files to Windows Server
+      - name: Transfer Published Files
+        uses: appleboy/scp-action@v0.1.4
         with:
-          host: 44.222.253.64 
+          host: 44.222.253.64
           username: Administrator
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
-          port: 22  # Default SSH port
-          script: |
-            # Remove existing files in the publish folder (to replace them)
-            Remove-Item -Path "C:/inetpub/wwwroot/publish" -Recurse -Force
-            # Copy the new files from the local publish directory
-            Copy-Item -Path "C:/publish/*" -Destination "C:/inetpub/wwwroot/publish/" -Recurse -Force
+          source: ./publish/*
+          target: C:/inetpub/wwwroot/
 
-      # Restart IIS to apply the changes (using SSH)
+      # Clean existing files and apply new files
+      - name: Clean and Apply Changes
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: 44.222.253.64
+          username: Administrator
+          password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
+          port: 22
+          script: |
+            powershell.exe -Command "
+              # Stop IIS worker processes to free any locked files
+              Stop-Process -Name w3wp -Force -ErrorAction SilentlyContinue;
+
+              # Remove all files and subdirectories inside the 'publish' folder
+              Get-ChildItem -Path 'C:/inetpub/wwwroot/publish' -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue;
+
+              # Remove the 'publish' directory itself if empty
+              Remove-Item -Path 'C:/inetpub/wwwroot/publish' -Recurse -Force -ErrorAction SilentlyContinue;
+
+              # Move the newly published files to the wwwroot folder
+              Move-Item -Path 'C:/inetpub/wwwroot/publish/*' -Destination 'C:/inetpub/wwwroot/' -Recurse -Force;
+            "
+
+      # Restart IIS to apply the changes
       - name: Restart IIS Service
         uses: appleboy/ssh-action@v0.1.4
         with:
@@ -55,5 +74,5 @@ jobs:
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
           port: 22
           script: |
-            # Restart IIS service
+            :: Restart IIS to apply changes
             iisreset
