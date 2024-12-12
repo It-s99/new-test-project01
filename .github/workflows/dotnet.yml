@@ -36,7 +36,7 @@ jobs:
       - name: Transfer Published Files
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: 44.222.253.64 
+          host: 44.222.253.64
           username: Administrator
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
           source: ./publish/*
@@ -46,7 +46,7 @@ jobs:
       - name: Clean and Apply Changes
         uses: appleboy/ssh-action@v0.1.4
         with:
-          host: 44.222.253.64 
+          host: 44.222.253.64
           username: Administrator
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
           port: 22
@@ -60,7 +60,7 @@ jobs:
       - name: Restart IIS Service
         uses: appleboy/ssh-action@v0.1.4
         with:
-         host: 44.222.253.64 
+          host: 44.222.253.64
           username: Administrator
           password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
           port: 22
