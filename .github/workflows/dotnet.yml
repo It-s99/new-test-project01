@@ -36,20 +36,43 @@ jobs:
       - name: List published files
         run: dir ./publish  # Changed to dir for Windows
 
+      # Upload published files as an artifact
+      - name: Upload published files as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-dashboard-artifact
+          path: ./publish
+
+  deploy:
+    runs-on: [self-hosted, windows]  # Use self-hosted Windows runner
+
+    needs: build  # Ensure that the build job has completed before deployment
+
+    steps:
+      # Download the artifact
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: web-dashboard-artifact
+          path: ./artifact
+
       # Clean existing files and apply new files on local runner
       - name: Clean and Apply Changes on Local Runner
         run: |
-          # Define the target directory inside the 'Web dashboard' folder
+          # Define the target directory inside the 'wwwroot' folder
           $targetDir = 'C:\inetpub\wwwroot\Web dashboard'
           
           # Stop IIS worker processes to free any locked files
           Stop-Process -Name w3wp -Force -ErrorAction SilentlyContinue;
           
-          # Remove all files and subdirectories inside the 'Web dashboard' folder
-          Remove-Item -Path "$targetDir\*" -Recurse -Force -ErrorAction SilentlyContinue;
+          # Remove the existing 'Web dashboard' folder and its contents
+          Remove-Item -Path "$targetDir" -Recurse -Force -ErrorAction SilentlyContinue;
           
-          # Copy the newly published files into the 'Web dashboard' folder
-          Copy-Item -Path './publish/*' -Destination $targetDir -Recurse -Force;
+          # Rename the downloaded artifact folder to 'Web dashboard'
+          Rename-Item -Path './artifact/publish' -NewName 'Web dashboard'
+          
+          # Move the new 'Web dashboard' folder to the target directory
+          Move-Item -Path './artifact/Web dashboard' -Destination $targetDir -Recurse -Force;
           
           # Restart IIS to apply the changes
           iisreset
