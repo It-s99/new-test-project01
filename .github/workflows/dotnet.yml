@@ -39,7 +39,7 @@ jobs:
           host: 20.0.3.56
           username: Administrator
           password: Atrity@123
-          source: ./Web dashboard/*
+          source: ./publish/*
           target: C:/inetpub/wwwroot/
 
       # Clean existing files and apply new files
