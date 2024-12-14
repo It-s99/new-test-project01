@@ -36,8 +36,8 @@ jobs:
       - name: List published files
         run: dir ./publish  # This will show the files in the 'publish' directory
 
-      # Move the published files to 'wwwroot' folder
-      - name: Move published files to wwwroot
+      # Clean up and move published files to the wwwroot folder
+      - name: Clean and Move Published Files to wwwroot
         run: |
           # Define the target directory inside the 'wwwroot' folder
           $targetDir = 'C:\inetpub\wwwroot\Web dashboard'
@@ -45,17 +45,24 @@ jobs:
           # Stop IIS worker processes to free any locked files
           Stop-Process -Name w3wp -Force -ErrorAction SilentlyContinue;
           
-          # Remove the existing 'Web dashboard' folder and its contents
-          Remove-Item -Path "$targetDir" -Recurse -Force -ErrorAction SilentlyContinue;
+          # Check if the 'Web dashboard' folder exists and remove it if it does
+          if (Test-Path -Path $targetDir) {
+              Write-Host "Removing existing Web dashboard folder"
+              Remove-Item -Path $targetDir -Recurse -Force;
+          }
+
+          # Create the new 'Web dashboard' folder
+          Write-Host "Creating new Web dashboard folder"
+          New-Item -Path $targetDir -ItemType Directory;
           
-          # Copy the files from the 'publish' directory to the 'wwwroot' folder
+          # Copy the files from the 'publish' directory to the 'Web dashboard' folder
+          Write-Host "Copying published files to the Web dashboard folder"
           Copy-Item -Path './publish/*' -Destination $targetDir -Recurse -Force;
           
           # Restart IIS to apply the changes
           iisreset
 
-      # Restart IIS to apply the changes
+      # Restart IIS to apply the changes (if not already done above)
       - name: Restart IIS Service
         run: |
-          # Restart IIS on the local machine
           iisreset
