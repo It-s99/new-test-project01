@@ -34,49 +34,28 @@ jobs:
 
       # List published files for debugging
       - name: List published files
-        run: dir ./publish  # Changed to `dir` for Windows
+        run: dir ./publish  # Changed to dir for Windows
 
-      # Transfer published files to Windows Server
-      - name: Transfer Published Files
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: 20.0.3.56
-          username: Administrator
-          password: Atrity@123
-          source: ./publish/*
-          target: C:/inetpub/wwwroot/
-
-      # Clean existing files and apply new files
-      - name: Clean and Apply Changes
-        uses: appleboy/ssh-action@v0.1.4
-        with:
-          host: 20.0.3.56
-          username: Administrator
-          password: Atrity@123
-          port: 22
-          script: |
-            powershell.exe -Command "
-              # Stop IIS worker processes to free any locked files
-              Stop-Process -Name w3wp -Force -ErrorAction SilentlyContinue;
-
-              # Remove all files and subdirectories inside the 'publish' folder
-              Get-ChildItem -Path 'C:/inetpub/wwwroot/Web dashboard' -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue;
-
-              # Remove the 'publish' directory itself if empty
-              Remove-Item -Path 'C:/inetpub/wwwroot/Web dashboard' -Recurse -Force -ErrorAction SilentlyContinue;
-
-              # Move the newly published files to the wwwroot folder
-              Move-Item -Path 'C:/inetpub/wwwroot/Web dashboard/*' -Destination 'C:/inetpub/wwwroot/' -Recurse -Force;
-            "
+      # Clean existing files and apply new files on local runner
+      - name: Clean and Apply Changes on Local Runner
+        run: |
+          # Define the target directory on the local machine (self-hosted runner)
+          $targetDir = 'C:\inetpub\wwwroot\Web dashboard'
+          
+          # Stop IIS worker processes to free any locked files
+          Stop-Process -Name w3wp -Force -ErrorAction SilentlyContinue;
+          
+          # Remove all files and subdirectories inside the 'publish' folder on the local runner
+          Remove-Item -Path "$targetDir\*" -Recurse -Force -ErrorAction SilentlyContinue;
+          
+          # Copy the newly published files to the target directory
+          Copy-Item -Path './publish/*' -Destination $targetDir -Recurse -Force;
+          
+          # Restart IIS to apply the changes
+          iisreset
 
       # Restart IIS to apply the changes
       - name: Restart IIS Service
-        uses: appleboy/ssh-action@v0.1.4
-        with:
-          host: 20.0.3.56
-          username: Administrator
-          password: Atrity@123
-          port: 22
-          script: |
-            # Restart IIS to apply changes
-            iisreset
+        run: |
+          # Restart IIS on the local machine
+          iisreset
