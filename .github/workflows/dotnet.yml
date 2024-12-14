@@ -69,7 +69,7 @@ jobs:
           Remove-Item -Path "$targetDir" -Recurse -Force -ErrorAction SilentlyContinue;
           
           # Correct the artifact download path
-          $artifactPath = 'C:\actions-runner\_work\new-test-project01\new-test-project01\artifact\web-dashboard-artifact'
+          $artifactPath = 'C:\actions-runner\_work\new-test-project01\new-test-project01\artifact'
           
           # Check if the artifact folder exists
           if (Test-Path $artifactPath) {
