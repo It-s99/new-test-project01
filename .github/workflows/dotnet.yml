@@ -34,7 +34,7 @@ jobs:
 
       # Transfer published files to Windows Server
       - name: Transfer Published Files
-        uses: appleboy/scp-action@v0.1.4
+        uses: appleboy/scp-action@v0.1.4Web dashboard
         with:
           host: 20.0.3.56
           username: Administrator
