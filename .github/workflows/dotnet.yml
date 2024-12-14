@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Web Dashboard CI/CD Pipeline
 
 on:
   push:
@@ -36,19 +36,19 @@ jobs:
       - name: Transfer Published Files
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: 44.222.253.64
+          host: 20.0.3.56
           username: Administrator
-          password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
-          source: ./publish/*
+          password: Atrity@123
+          source: ./Web dashboard/*
           target: C:/inetpub/wwwroot/
 
       # Clean existing files and apply new files
       - name: Clean and Apply Changes
         uses: appleboy/ssh-action@v0.1.4
         with:
-          host: 44.222.253.64
+          host: 20.0.3.56
           username: Administrator
-          password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
+          password: Atrity@123
           port: 22
           script: |
             powershell.exe -Command "
@@ -56,22 +56,22 @@ jobs:
               Stop-Process -Name w3wp -Force -ErrorAction SilentlyContinue;
 
               # Remove all files and subdirectories inside the 'publish' folder
-              Get-ChildItem -Path 'C:/inetpub/wwwroot/publish' -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue;
+              Get-ChildItem -Path 'C:/inetpub/wwwroot/Web dashboard' -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue;
 
               # Remove the 'publish' directory itself if empty
-              Remove-Item -Path 'C:/inetpub/wwwroot/publish' -Recurse -Force -ErrorAction SilentlyContinue;
+              Remove-Item -Path 'C:/inetpub/wwwroot/Web dashboard' -Recurse -Force -ErrorAction SilentlyContinue;
 
               # Move the newly published files to the wwwroot folder
-              Move-Item -Path 'C:/inetpub/wwwroot/publish/*' -Destination 'C:/inetpub/wwwroot/' -Recurse -Force;
+              Move-Item -Path 'C:/inetpub/wwwroot/Web dashboard/*' -Destination 'C:/inetpub/wwwroot/' -Recurse -Force;
             "
 
       # Restart IIS to apply the changes
       - name: Restart IIS Service
         uses: appleboy/ssh-action@v0.1.4
         with:
-          host: 44.222.253.64
+          host: 20.0.3.56
           username: Administrator
-          password: 5Rc-e2$AUvheMYsx.T%5TX)=Rnp=Nr5p
+          password: Atrity@123
           port: 22
           script: |
             :: Restart IIS to apply changes
