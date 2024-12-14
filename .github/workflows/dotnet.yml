@@ -39,16 +39,16 @@ jobs:
       # Clean existing files and apply new files on local runner
       - name: Clean and Apply Changes on Local Runner
         run: |
-          # Define the target directory on the local machine (self-hosted runner)
+          # Define the target directory inside the 'Web dashboard' folder
           $targetDir = 'C:\inetpub\wwwroot\Web dashboard'
           
           # Stop IIS worker processes to free any locked files
           Stop-Process -Name w3wp -Force -ErrorAction SilentlyContinue;
           
-          # Remove all files and subdirectories inside the 'publish' folder on the local runner
+          # Remove all files and subdirectories inside the 'Web dashboard' folder
           Remove-Item -Path "$targetDir\*" -Recurse -Force -ErrorAction SilentlyContinue;
           
-          # Copy the newly published files to the target directory
+          # Copy the newly published files into the 'Web dashboard' folder
           Copy-Item -Path './publish/*' -Destination $targetDir -Recurse -Force;
           
           # Restart IIS to apply the changes
