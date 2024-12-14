@@ -68,11 +68,8 @@ jobs:
           # Remove the existing 'Web dashboard' folder and its contents
           Remove-Item -Path "$targetDir" -Recurse -Force -ErrorAction SilentlyContinue;
           
-          # Rename the downloaded artifact folder to 'Web dashboard'
-          Rename-Item -Path './artifact/web-dashboard-artifact/publish' -NewName 'Web dashboard'
-          
-          # Move the new 'Web dashboard' folder to the target directory
-          Move-Item -Path './artifact/web-dashboard-artifact/Web dashboard' -Destination $targetDir -Recurse -Force;
+          # Move the files from the 'publish' folder inside the downloaded artifact to 'wwwroot'
+          Copy-Item -Path './artifact/web-dashboard-artifact/*' -Destination $targetDir -Recurse -Force;
           
           # Restart IIS to apply the changes
           iisreset
