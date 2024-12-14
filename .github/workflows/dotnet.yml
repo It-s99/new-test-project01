@@ -32,32 +32,12 @@ jobs:
       - name: Publish
         run: dotnet publish --configuration Release --output ./publish
 
-      # List published files for debugging
+      # List the contents of the publish directory for debugging
       - name: List published files
-        run: dir ./publish  # Changed to dir for Windows
+        run: dir ./publish  # This will show the files in the 'publish' directory
 
-      # Upload published files as artifact
-      - name: Upload published files as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: web-dashboard-artifact
-          path: ./publish
-
-  deploy:
-    runs-on: [self-hosted, windows]  # Use self-hosted Windows runner
-
-    needs: build  # Ensure that the build job has completed before deployment
-
-    steps:
-      # Download the artifact
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: web-dashboard-artifact
-          path: ./artifact
-
-      # Clean existing files and apply new files on local runner
-      - name: Clean and Apply Changes on Local Runner
+      # Move the published files to 'wwwroot' folder
+      - name: Move published files to wwwroot
         run: |
           # Define the target directory inside the 'wwwroot' folder
           $targetDir = 'C:\inetpub\wwwroot\Web dashboard'
@@ -68,16 +48,8 @@ jobs:
           # Remove the existing 'Web dashboard' folder and its contents
           Remove-Item -Path "$targetDir" -Recurse -Force -ErrorAction SilentlyContinue;
           
-          # Correct the artifact download path
-          $artifactPath = 'C:\actions-runner\_work\new-test-project01\new-test-project01\artifact'
-          
-          # Check if the artifact folder exists
-          if (Test-Path $artifactPath) {
-              # Move the files from the downloaded artifact to the target directory
-              Copy-Item -Path "$artifactPath\*" -Destination $targetDir -Recurse -Force;
-          } else {
-              Write-Error "Artifact folder does not exist at path: $artifactPath"
-          }
+          # Copy the files from the 'publish' directory to the 'wwwroot' folder
+          Copy-Item -Path './publish/*' -Destination $targetDir -Recurse -Force;
           
           # Restart IIS to apply the changes
           iisreset
