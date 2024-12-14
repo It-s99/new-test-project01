@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, windows]  # Use self-hosted Windows runner
 
     steps:
       # Checkout the repository
@@ -34,7 +34,7 @@ jobs:
 
       # List published files for debugging
       - name: List published files
-        run: ls -R ./publish
+        run: dir ./publish  # Changed to `dir` for Windows
 
       # Transfer published files to Windows Server
       - name: Transfer Published Files
@@ -78,5 +78,5 @@ jobs:
           password: Atrity@123
           port: 22
           script: |
-            :: Restart IIS to apply changes
+            # Restart IIS to apply changes
             iisreset
